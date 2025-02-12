@@ -7,6 +7,6 @@ config :temperature_sensor, :emqtt,
   clean_start: false,
   name: :emqtt
 
-config :temperature_sensor, :topic, "ambient/temperature"
+config :temperature_sensor, :topic, "temperature/ambient"
 
 config :temperature_sensor, :interval, 1000
