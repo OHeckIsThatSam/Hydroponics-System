@@ -45,9 +45,8 @@ defmodule TemperatureSensor do
 
 
   defp publish_temperature(pid, topic) do
-    temp = 10.0 + (2 * :rand.normal())
-    message = {System.system_time(:millisecond), temp}
-    payload = :erlang.term_to_binary(message)
+    temp = 15.0 + (5 * :rand.normal())
+    payload = Float.to_string(temp)
     :emqtt.publish(pid, topic, payload)
   end
 
