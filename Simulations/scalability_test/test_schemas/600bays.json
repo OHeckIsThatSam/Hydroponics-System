@@ -1,0 +1,16 @@
+{
+    "ambient_sensors": {
+        "temperature": 10,
+        "humidity": 10
+    },
+    "bay_count": 600,
+    "bay_sensors": {
+        "temperature": 1,
+        "humidity": 1,
+        "light_level": 1,
+        "water_temperature": 1,
+        "water_level": 1,
+        "water_ph": 1,
+        "water_conductivity": 1
+    }
+}
