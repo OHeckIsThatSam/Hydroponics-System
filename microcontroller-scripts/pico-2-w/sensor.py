@@ -27,7 +27,7 @@ class Sensor():
         self.conversion_factor = 3.3 / 65535
     
     
-    def set_accuracy(decimal_places):
+    def set_accuracy(self, decimal_places):
         """
         Sets the accuracy of the sensor readings.
         

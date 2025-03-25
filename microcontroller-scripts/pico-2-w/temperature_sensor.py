@@ -1,10 +1,10 @@
-from machine import Pin, ADC
-from sensors.sensor import Sensor
+from machine import ADC
+from sensor import Sensor
 
 
-class LightSensor(Sensor):
+class TemperatureSensor(Sensor):
     """
-    A class wrapping logic for reading from a light level sensor.
+    A class wrapping logic for reading from a temperature sensor.
     
     Attributes
     ----------
@@ -13,19 +13,20 @@ class LightSensor(Sensor):
     sensor: ADC
         The input pin of the sensor.
     conversion_factor: float
-        The factor used when converting from voltage to light level.
+        The factor used when converting from voltage to temperature.
     """
     
     
-    def __init__(self, decimal_places, input_pin):
+    def __init__(self, decimal_places, input_pin=4):
         """
-        Initialises a LightSensor object.
+        Initialises a TemperatureSensor object.
         
         Parameters
         ----------
         decimal_places : int
             The number of decimal places.
         input_pin: int
+            default: 4 (pin of internal temperature resistor on Pico 2 W)
             The pin the sensor is connected too.
         """
         if not isinstance(input_pin, int):
@@ -34,17 +35,20 @@ class LightSensor(Sensor):
             raise ValueError("input_pin must be a vaild pin on the pico 2 W")
         
         super().__init__(decimal_places)
-        self.sensor = ADC(Pin(input_pin))
+        self.sensor = ADC(input_pin)
     
     
     def read(self) -> float:
         """
-        Gets the current light level.
+        Gets the current temperature.
         
         Returns
         -------
         float
-            The light level, ranging from 0 -> 3.3, rounded to the set accuracy.
+            The temperature, rounded to the set accuracy.
         """
-        light_level = self.sensor.read_u16() * self.conversion_factor
-        return round(light_level, self.accuracy)
+        raw_value = self.sensor.read_u16()
+        voltage = raw_value * self.conversion_factor
+        
+        # Convert voltage to celsius then round
+        return round(27 - (voltage - 0.706) / 0.001721, self.accuracy)

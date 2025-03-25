@@ -1,10 +1,10 @@
-from machine import ADC
-from sensors.sensor import Sensor
+from machine import Pin, ADC
+from sensor import Sensor
 
 
-class TemperatureSensor(Sensor):
+class LightSensor(Sensor):
     """
-    A class wrapping logic for reading from a temperature sensor.
+    A class wrapping logic for reading from a light level sensor.
     
     Attributes
     ----------
@@ -13,20 +13,19 @@ class TemperatureSensor(Sensor):
     sensor: ADC
         The input pin of the sensor.
     conversion_factor: float
-        The factor used when converting from voltage to temperature.
+        The factor used when converting from voltage to light level.
     """
     
     
-    def __init__(self, decimal_places, input_pin=4):
+    def __init__(self, decimal_places, input_pin):
         """
-        Initialises a TemperatureSensor object.
+        Initialises a LightSensor object.
         
         Parameters
         ----------
         decimal_places : int
             The number of decimal places.
         input_pin: int
-            default: 4 (pin of internal temperature resistor on Pico 2 W)
             The pin the sensor is connected too.
         """
         if not isinstance(input_pin, int):
@@ -35,20 +34,17 @@ class TemperatureSensor(Sensor):
             raise ValueError("input_pin must be a vaild pin on the pico 2 W")
         
         super().__init__(decimal_places)
-        self.sensor = ADC(input_pin)
+        self.sensor = ADC(Pin(input_pin))
     
     
     def read(self) -> float:
         """
-        Gets the current temperature.
+        Gets the current light level.
         
         Returns
         -------
         float
-            The temperature, rounded to the set accuracy.
+            The light level, ranging from 0 -> 3.3, rounded to the set accuracy.
         """
-        raw_value = self.sensor.read_u16()
-        voltage = raw_value * self.conversion_factor
-        
-        # Convert voltage to celsius then round
-        return round(27 - (voltage - 0.706) / 0.001721, self.accuracy)
+        light_level = self.sensor.read_u16() * self.conversion_factor
+        return round(light_level, self.accuracy)
