@@ -5,10 +5,9 @@ from temperature_sensor import TemperatureSensor
 
 class SensorFactory:
     def create_sensor(key, decimal_places, pin) -> Sensor:
-        match key:
-            case "temperature":
-                return TemperatureSensor(decimal_places, pin)
-            case "light_level":
-                return LightSensor(decimal_places, pin)
-            case _:
-                raise ValueError(f"Unknown sensor type {key}.")
+        if key == "temperature":
+            return TemperatureSensor(decimal_places, pin)
+        elif key == "light_level":
+            return LightSensor(decimal_places, pin)
+        else:
+            raise ValueError(f"Unknown sensor type of {key}.")
