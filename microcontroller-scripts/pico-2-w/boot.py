@@ -2,13 +2,15 @@ import network, config, sys, machine, time, logging
 
 # Set logging defaults
 logging.basicConfig(
-        filename="errors.log",
-        filemode="w",
-        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S",
+        filename=config.LOG_FILENAME,
+        filemode=config.LOG_FILEMODE,
+        format=config.LOG_FORMAT,
+        datefmt=config.LOG_DATE_FORMAT,
         level=logging.DEBUG
     )
 
+# Boot.py called from/before main so magic __name__ gives __main__ so logger
+# specifically named as boot. __name__ should be used everywhere else.
 logger = logging.getLogger("boot")
 logger.info("Booting application...")
 

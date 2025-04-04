@@ -1,6 +1,5 @@
 import config, logging, machine, time
-from sensor_factory import SensorFactory
-from sensor import Sensor
+from sensor_controller import SensorController
 from umqtt.simple import MQTTClient
 
 
@@ -22,47 +21,24 @@ def main():
         return 0
     
     logger.info("Initialising sensors.")
-    sensors = init_sensors()
-    if len(sensors) == 0:
+    sensor_controller = SensorController()
+    sensor_controller.init_sensors(config.PUBLISH_TOPIC, config.DECIMAL_PLACES, config.SENSORS)
+    if sensor_controller.sensor_count() == 0:
         logger.warning("No sensors were successfully initialised.")
     
     logger.info("Subscribing to topics.")
     # Subscribe to any topics here that trigger message callback
-    mqtt.set_callback(handle_message)
+    mqtt.set_callback(subscription_callback)
     mqtt.subscribe(config.COMMAND_TOPIC)
     
     while True:
         mqtt.check_msg()
         
-        for (topic, sensor) in sensors:
-            message = str(sensor.read()).encode()
-            mqtt.publish(topic, message)
+        for (topic, reading) in sensor_controller.read_sensors():
+            mqtt.publish(topic, str(reading).encode())
         
         time.sleep(config.PUBLISH_INTERVAL)
-
-
-def init_sensors() -> list[(str, Sensor)]:
-    """
-    Initialises sensor objects from supplied values in config.
-
-    Returns
-    -------
-    sensors: list[(str, Sensor)]
-        A list of sensors and their publishing topic.
-    """
-    sensors = []
-
-    for key in config.SENSORS:
-        try:
-            topic = f"{config.PUBLISH_TOPIC}/{key}"
-            sensor = SensorFactory.create_sensor(key, config.DECIMAL_PLACES, config.SENSORS[key]["pin"])
-            sensors.append((topic, sensor))
-        except (ValueError, TypeError, AttributeError) as e:
-            # Send mqtt message
-            logger.exception("Invalid config in sensor section, unable to initialise sensor.", exc_info=e)
-
-    return sensors
-        
+      
 
 def connect_mqtt() -> MQTTClient:
     """
@@ -85,7 +61,13 @@ def connect_mqtt() -> MQTTClient:
     return client
 
 
-def handle_message(topic, message):
+def subscription_callback(topic, message):
+    # Update/Change config
+
+    # Set value of running sensors
+
+    # Set value of running actuator
+
     print(message)
 
 

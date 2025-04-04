@@ -42,7 +42,7 @@ class Sensor():
            
     def read(self):
         """
-        Empty function as MicroPython dosen't recognise abstract classes or functions.
+        Empty function as MicroPython doesn't recognise abstract classes or functions.
         Reads the value of the sensor.
         
         Returns
