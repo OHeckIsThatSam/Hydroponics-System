@@ -13,10 +13,14 @@ class SensorController:
         """
         Initialises sensor objects from parameters.
 
-        Returns
-        -------
-        sensors: list[(str, Sensor)]
-            A list of sensors and their publishing topic.
+        Parameters
+        ----------
+        base_topic: string
+            The common base of topics for sensor reporting.
+        decimal_places: int
+            The number of decimal places required from sensor readings.
+        sensor_params: dict[str, dict[str, any]]
+            A nested dictionary containing parameters for each of the sensors.
         """
         for key in sensor_params:
             try:
@@ -33,7 +37,15 @@ class SensorController:
                 self._logger.exception("Invalid config in sensor section, unable to initialise sensor.", exc_info=e)
 
 
-    def read_sensors(self):
+    def read_sensors(self) -> list[(str, float)]:
+        """
+        Gets the readings from all sensors.
+
+        Returns
+        -------
+        readings: list[(str, float)]
+            A list of tuples containing the topic and value which is to be published.
+        """
         readings = []
 
         for (topic, sensor) in self._sensors:
@@ -43,7 +55,7 @@ class SensorController:
     
 
     def set_accuracy(self, new_accuracy):
-        for sensor in self._sensors:
+        for (_topic, sensor) in self._sensors:
             sensor.set_accuracy(new_accuracy)
 
 

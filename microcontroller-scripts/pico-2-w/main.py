@@ -5,6 +5,7 @@ from umqtt.simple import MQTTClient
 
 logger = logging.getLogger(__name__)
 
+_callbacks = {}
 
 def main():
     try:
@@ -25,6 +26,9 @@ def main():
     sensor_controller.init_sensors(config.PUBLISH_TOPIC, config.DECIMAL_PLACES, config.SENSORS)
     if sensor_controller.sensor_count() == 0:
         logger.warning("No sensors were successfully initialised.")
+    
+    # Set the callbacks for commands
+    _callbacks["accuracy"] = sensor_controller.set_accuracy
     
     logger.info("Subscribing to topics.")
     # Subscribe to any topics here that trigger message callback
@@ -62,13 +66,19 @@ def connect_mqtt() -> MQTTClient:
 
 
 def subscription_callback(topic, message):
+    print(f"Callback triggered for topic {topic}")
+    print(f"Message: {message}")
     # Update/Change config
 
     # Set value of running sensors
+    if topic.endswith("accuracy"):
+        print("Updating accuracy")
+        try:
+            _callbacks["accuracy"](int(message))
+        except ValueError as e:
+            logger.warning(f"Invalid command message {message}; Ignoring command.")
 
     # Set value of running actuator
-
-    print(message)
 
 
 def restart():

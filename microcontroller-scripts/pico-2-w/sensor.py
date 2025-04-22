@@ -40,7 +40,7 @@ class Sensor():
             self.accuracy = decimal_places
             
            
-    def read(self):
+    def read(self) -> float:
         """
         Empty function as MicroPython doesn't recognise abstract classes or functions.
         Reads the value of the sensor.
