@@ -74,9 +74,20 @@ config :phoenix_live_view,
 config :swoosh, :api_client, false
 
 config :dashboard, :emqtt,
-  host: "127.0.0.1",
-  port: 1883
-
-config :dashboard, :sensor_id, "temp_sensor"
+  host: "192.168.68.63",
+  port: 1883,
+  clientid: "sensor_aggregator"
 
 config :dashboard, :timespan, 60
+
+config :dashboard, :args,
+  host: "192.168.68.63",
+  port: 1883,
+  client_id: "sensor_aggregator",
+  base_sub_topic: "measurements/ambient/+/",
+  sub_topics: [
+    :temperature,
+    :light_level,
+    :humidity],
+  base_pub_topic: "measurements/ambient/",
+  buffer_size: 30

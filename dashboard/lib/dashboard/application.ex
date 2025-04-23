@@ -2,6 +2,7 @@ defmodule Dashboard.Application do
   # See https://hexdocs.pm/elixir/Application.html
   # for more information on OTP Applications
   @moduledoc false
+alias Logger.App
 
   use Application
 
@@ -15,6 +16,9 @@ defmodule Dashboard.Application do
       {Finch, name: Dashboard.Finch},
       # Start a worker by calling: Dashboard.Worker.start_link(arg)
       # {Dashboard.Worker, arg},
+      {Dashboard.SensorAggregator, [
+        Application.get_env(:dashboard, :emqtt),
+        Application.get_env(:dashboard, :args)]},
       # Start to serve requests, typically the last entry
       DashboardWeb.Endpoint
     ]
