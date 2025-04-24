@@ -1,5 +1,6 @@
 defmodule Dashboard.SensorAggregator do
   @moduledoc false
+  alias Phoenix.PubSub
 
   use GenServer
 
@@ -68,6 +69,8 @@ defmodule Dashboard.SensorAggregator do
   defp publish_buffer(key, %{pid: pid, measurements: measurements, base_pub_topic: topic} = state) do
     avg = Float.round(Enum.sum(measurements[key]) / length(measurements[key]), 3)
     :emqtt.publish(pid, topic <> Atom.to_string(key), Float.to_string(avg))
+    # Broadcast within dashboard app
+    PubSub.broadcast(Dashboard.PubSub, "measurements/ambient", {:update, key, avg})
     {:ok, state}
   end
 

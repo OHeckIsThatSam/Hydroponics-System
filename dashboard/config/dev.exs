@@ -90,4 +90,4 @@ config :dashboard, :args,
     :light_level,
     :humidity],
   base_pub_topic: "measurements/ambient/",
-  buffer_size: 30
+  buffer_size: 5

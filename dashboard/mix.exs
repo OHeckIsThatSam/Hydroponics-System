@@ -54,7 +54,6 @@ defmodule Dashboard.MixProject do
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
       {:emqtt, github: "emqx/emqtt", tag: "1.14.0", system_env: [{"BUILD_WITHOUT_QUIC", "1"}]},
-      {:tortoise, "~> 0.10.0"},
       {:contex, github: "mindok/contex"}
     ]
   end

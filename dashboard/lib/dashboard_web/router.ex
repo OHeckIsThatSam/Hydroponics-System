@@ -17,7 +17,7 @@ defmodule DashboardWeb.Router do
   scope "/", DashboardWeb do
     pipe_through :browser
 
-    live "/", TemperatureLive.Index
+    live "/", AmbientLive.Index
   end
 
   # Other scopes may use custom stacks.
