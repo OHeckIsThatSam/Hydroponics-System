@@ -24,6 +24,9 @@
     <%= if @ambient_values[:humidity] do %>
      <p><%= @ambient_values[:humidity] %></p>
     <% end %>
+    <%= if @plots[:humidity] do %>
+      <%= @plots[:humidity] %>
+    <% end %>
   </div>
 
 </div>

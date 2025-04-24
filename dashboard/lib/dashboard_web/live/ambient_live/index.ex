@@ -63,11 +63,6 @@ defmodule DashboardWeb.AmbientLive.Index do
     {:noreply, socket}
   end
 
-  def convert_light_level(light_level) do
-    round((light_level / 3.3) * 100)
-  end
-
-
   defp update_plot(key, val, socket) do
     now = DateTime.utc_now()
     new_report = {now, val}
@@ -76,15 +71,15 @@ defmodule DashboardWeb.AmbientLive.Index do
       |> Enum.filter(fn {dt, _} -> DateTime.compare(dt, deadline) == :gt end)
       |> Enum.sort()
 
-    {reports, plot(key, reports, deadline, now)}
+    {reports, plot(reports, deadline, now)}
   end
 
-  defp plot(key, reports, deadline, now) do
+  defp plot(reports, deadline, now) do
     max = reports
-    |> Enum.map(fn {date, val} -> val end)
+    |> Enum.map(fn {_, val} -> val end)
     |> Enum.max()
     min = reports
-    |> Enum.map(fn {date, val} -> val end)
+    |> Enum.map(fn {_, val} -> val end)
     |> Enum.min()
 
     x_scale = Contex.TimeScale.new()
@@ -92,7 +87,7 @@ defmodule DashboardWeb.AmbientLive.Index do
       |> Contex.TimeScale.interval_count(10)
 
     y_scale = Contex.ContinuousLinearScale.new()
-      |> Contex.ContinuousLinearScale.domain(min, max + 1)
+      |> Contex.ContinuousLinearScale.domain(min - 1, max + 1)
 
     options = [
       smoothed: false,
