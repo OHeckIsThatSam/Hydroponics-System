@@ -1,8 +1,4 @@
 <div>
-  <div class="phx=hero">
-    <h1>Monitoring</h1>
-  </div>
-
   <div>
     <h2>Temperature</h2>
     <%= if @ambient_values[:temperature] do %>
@@ -11,18 +7,22 @@
     <%= if @plots[:temperature] do %>
       <%= @plots[:temperature] %>
     <% end %>
+  </div>
 
+  <div>
     <h2>Light Level</h2>
     <%= if @ambient_values[:light_level] do %>
-     <p><%= @ambient_values[:light_level] %>%</p>
+     <p><%= @ambient_values[:light_level] %> %</p>
     <% end %>
     <%= if @plots[:light_level] do %>
       <%= @plots[:light_level] %>
     <% end %>
+  </div>
 
+  <div>
     <h2>Humidity</h2>
     <%= if @ambient_values[:humidity] do %>
-     <p><%= @ambient_values[:humidity] %></p>
+     <p><%= @ambient_values[:humidity] %> %</p>
     <% end %>
     <%= if @plots[:humidity] do %>
       <%= @plots[:humidity] %>

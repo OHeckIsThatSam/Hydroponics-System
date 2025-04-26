@@ -39,9 +39,9 @@ defmodule DashboardWeb.AmbientLive.Index do
   @impl true
   def handle_info({:update, key, val}, socket) do
     current_vals = socket.assigns[:ambient_values]
-    val = case key == :light_level do
-      false -> val
-      true -> round((val / 3.3) * 100)
+    val = case key do
+      :light_level -> round((val / 3.3) * 100)
+      _ -> val
     end
 
     updated_vals = case Map.has_key?(current_vals, key) do

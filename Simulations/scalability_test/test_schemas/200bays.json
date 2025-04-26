@@ -1,7 +1,8 @@
 {
     "ambient_sensors": {
         "temperature": 4,
-        "humidity": 4
+        "humidity": 4,
+        "light_level": 4
     },
     "bay_count": 200,
     "bay_sensors": {

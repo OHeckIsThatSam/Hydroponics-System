@@ -1,5 +1,6 @@
 defmodule ScalabilityTest.GenericSensor do
   @moduledoc false
+alias IEx.App
 
   use GenServer
 
@@ -11,6 +12,14 @@ defmodule ScalabilityTest.GenericSensor do
     {client_id, topic} = args
 
     mqtt_config = Application.get_env(:scalability_test, :mqtt)
+    is_resilience_test = Application.get_env(:scalability_test, :is_resilience_test)
+    fail_percent = Application.get_env(:scalability_test, :fail_percent)
+
+    message_count = mqtt_config[:max_message_count]
+    message_count = case is_resilience_test do
+      true -> set_fail_message_count(message_count, fail_percent)
+      false -> message_count
+    end
 
     {:ok, pid} = Tortoise.Supervisor.start_child(
       client_id: client_id,
@@ -24,7 +33,8 @@ defmodule ScalabilityTest.GenericSensor do
       timer: nil,
       interval_mills: 1000,
       topic: topic,
-      message_count: mqtt_config[:max_message_count]
+      message_count: message_count
+
     }
 
     {:ok, reset_timer(state), {:continue, :start}}
@@ -34,11 +44,8 @@ defmodule ScalabilityTest.GenericSensor do
     {:noreply, state}
   end
 
-  @doc """
-
-  """
-  def handle_info(:tick, %{message_count: message_count} = state) when message_count == 0 do
-    # Supervisor.stop(Tortoise.Supervisor)
+  def handle_info(:tick, %{message_count: message_count, client_id: client_id} = state) when message_count == 0 do
+    Tortoise.Connection.disconnect(client_id)
     {:stop, :normal, state}
   end
 
@@ -53,7 +60,22 @@ defmodule ScalabilityTest.GenericSensor do
 
 
   defp publish(client_id, topic) do
-    Tortoise.publish(client_id, topic, Float.to_string(1.01))
+    type = String.split(topic, "/")
+    |> Enum.take(-1)
+    |> Enum.join()
+
+    payload = case type do
+      "temperature" -> :rand.uniform(30)
+      "humidity" -> :rand.uniform() * 100
+      "light_level" -> :rand.uniform() * 3.3
+      "water_temperature" -> :rand.uniform(30)
+      "water_level" -> :rand.uniform()
+      "water_ph" -> :rand.uniform(14)
+      "water_conductivity" -> :rand.uniform()
+      _ -> 0
+    end
+
+    Tortoise.publish(client_id, topic, "#{payload}")
   end
 
   defp reset_timer(state) do
@@ -62,5 +84,12 @@ defmodule ScalabilityTest.GenericSensor do
     end
     timer = Process.send_after(self(), :tick, state.interval_mills)
     %{state | timer: timer}
+  end
+
+  defp set_fail_message_count(count, chance) do
+    cond do
+      :rand.uniform() <= chance / 100 -> 2
+      true -> count
+    end
   end
 end
