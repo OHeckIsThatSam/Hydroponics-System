@@ -5,7 +5,7 @@ defmodule Dashboard.SensorAggregator do
   use GenServer
 
   def start_link(initial) do
-    GenServer.start(__MODULE__, initial)
+    GenServer.start_link(__MODULE__, initial)
   end
 
   def init(args) do

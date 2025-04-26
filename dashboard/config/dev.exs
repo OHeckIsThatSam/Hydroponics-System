@@ -76,14 +76,12 @@ config :swoosh, :api_client, false
 config :dashboard, :emqtt,
   host: "192.168.68.63",
   port: 1883,
-  clientid: "sensor_aggregator"
+  clientid: "sensor_aggregator",
+  keepalive: 5
 
 config :dashboard, :timespan, 60
 
 config :dashboard, :args,
-  host: "192.168.68.63",
-  port: 1883,
-  client_id: "sensor_aggregator",
   base_sub_topic: "measurements/ambient/+/",
   sub_topics: [
     :temperature,
