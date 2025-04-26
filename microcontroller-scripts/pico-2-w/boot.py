@@ -1,4 +1,6 @@
-import network, config, sys, machine, time, logging
+import network, config, sys, time, logging
+from machine import Pin, PWM
+
 
 # Set logging defaults
 logging.basicConfig(
@@ -15,7 +17,18 @@ logger = logging.getLogger("boot")
 logger.info("Booting application...")
 
 
-led = machine.Pin('LED', machine.Pin.OUT)
+led = Pin('LED', Pin.OUT)
+
+
+def initialise_actuators():
+    try:
+        for key in config.ACTUATORS:
+            if key == "pump":
+                pump = PWM(Pin(config.ACTUATORS[key]["pin"]))
+                pump.freq(config.PWM_FREQ)
+                pump.duty_u16(65536 * (config.ACTUATORS[key]["power"] / 100))
+    except Exception as e:
+        logger.exception("Exception thrown while initialising actuators...", exc_info=e)
 
 
 def connect_to_wifi():
@@ -36,5 +49,7 @@ def connect_to_wifi():
     logger.debug(f"IP, subnet: {wlan.ipconfig("addr4")}")
     
 
+logger.info("Initialising actuators...")
+initialise_actuators()
 logger.info("Connecting to Wi-Fi...")
 connect_to_wifi()
