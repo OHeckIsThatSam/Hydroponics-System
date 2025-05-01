@@ -1,0 +1,38 @@
+services:
+  emqx:
+    image: emqx:latest
+    restart: unless-stopped
+    environment:
+      - "EMQX_DASHBOARD__DEFAULT_PASSWORD=sam"
+    volumes:
+      - vol-emqx-data:/opt/emqx/data
+      - vol-emqx-log:/opt/emqx/log
+    ports:
+      - "18083:18083"
+      - "1883:1883"
+
+  influxdb:
+    image: influxdb:2
+    restart: unless-stopped
+    ports:
+      - 8086:8086
+    environment:
+      - "DOCKER_INFLUXDB_INIT_MODE: setup"
+      - "DOCKER_INFLUXDB_INIT_USERNAME: admin"
+      - "DOCKER_INFLUXDB_INIT_PASSWORD: sam"
+      - "DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: MyInitialAdminToken0=="
+      - "DOCKER_INFLUXDB_INIT_ORG: hydroponics"
+      - "DOCKER_INFLUXDB_INIT_BUCKET: hydroponics"
+    volumes:
+      - type: volume
+        source: influxdb2-data
+        target: /var/lib/influxdb2
+      - type: volume
+        source: influxdb2-config
+        target: /etc/influxdb2
+
+volumes:
+  vol-emqx-data:
+  vol-emqx-log:
+  influxdb2-data:
+  influxdb2-config:
